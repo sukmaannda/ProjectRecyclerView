@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">LoginRecyclerView</string>
+    <string name="product_name">Nama Produk</string>
+    <string name="desc">Deskripsi</string>
+    <string name="like">Like</string>
+    <string name="share">Share</string>
+    <string name="grid">Grid</string>
+    <string name="with_cardview">with CardView</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_text_1">Sign Up</string>
+    <string name="tab_text_2">Profile</string>
+
+</resources>
