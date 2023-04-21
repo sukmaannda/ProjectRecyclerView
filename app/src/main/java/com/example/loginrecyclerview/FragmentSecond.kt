@@ -1,43 +1,90 @@
 package com.example.loginrecyclerview
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class FragmentSecond : Fragment() {
-    private var communicationViewModel: CommunicationViewModel? = null
-    private var txtName: TextView? = null
-    private var txtEmail: TextView? = null
+class FragmentSecond : Fragment(){
+    private var fabAddFriend: FloatingActionButton? = null
+    private var listMyFriends: RecyclerView? = null
+    //    lateinit var listTeman: MutableList<MyFriend>
+    private var listTeman: List<MyFriend>? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        communicationViewModel = ViewModelProviders.of(requireActivity()).get(CommunicationViewModel::class.java)
+    private var db: AppDatabase? = null
+    private var myFriendDao: MyFriendDao? = null
+
+    companion object{
+        fun newInstance():FragmentSecond{
+            return FragmentSecond()
+        }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_second, container, false)
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_second,container,false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        txtName = view.findViewById(R.id.textViewName)
-        txtEmail = view.findViewById(R.id.textViewEmail)
-        communicationViewModel!!.name.observe(requireActivity(),
-            Observer { s -> txtName!!.text = s })
-        communicationViewModel!!.email.observe(requireActivity(),
-            Observer { s -> txtEmail!!.text = s })
+        initLocalDB()
+        initView()
     }
 
+    private fun initLocalDB() {
+        db = AppDatabase.getAppDataBase(requireActivity())
+        myFriendDao = db?.myFriendDao()
+    }
 
-    companion object {
-        fun newInstance(): FragmentSecond {
-            return FragmentSecond()
+    private fun initView() {
+        listMyFriends = activity?.findViewById(R.id.listMyFriends)
+
+        fabAddFriend?.setOnClickListener {
+        (activity as MainActivityFragment).tampilMyFriendsAddFragment()
+       }
+        ambilDataTeman()
+    }
+
+    private fun ambilDataTeman() {
+        listTeman = ArrayList()
+        myFriendDao?.ambilSemuaTeman()?.observe(requireActivity()) { r -> listTeman = r
+            when {
+                listTeman?.size == 0 -> tampilToast("Belum ada data teman")
+                else -> {
+                    tampilTeman()
+                }
+            }
         }
+    }
+
+    private fun tampilToast(message: String) {
+        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fabAddFriend = null
+        listMyFriends = null
+    }
+
+    private fun simulasiDataTeman() {
+        listTeman = ArrayList()
+//        listTeman.add(MyFriend("Muhammad", "Laki-laki", "ade@gmail.com", "085719004268", "Bandung"))
+//        listTeman.add(MyFriend("Al Harits", "Laki-laki", "rifaldi@gmail.com", "081213416171", "Bandung"))
+    }
+
+    private fun tampilTeman() {
+        listMyFriends?.layoutManager = LinearLayoutManager(activity)
+        listMyFriends?.adapter = MyFriendAdapter(requireActivity(),
+            listTeman!! as ArrayList<MyFriend>
+        )
     }
 }

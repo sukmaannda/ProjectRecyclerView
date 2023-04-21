@@ -1,40 +1,35 @@
 package com.example.loginrecyclerview
-
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 
-class MainActivityFragment : AppCompatActivity(), View.OnClickListener {
-    @SuppressLint("MissingInflatedId")
+class MainActivityFragment : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
-        val email = findViewById<EditText>(R.id.email)
-        val loginButton = findViewById<Button>(R.id.LoginButton)
+//        tampilMyFriendsFragment()
 
-        val btnMoveActivity: Button =
-            findViewById(R.id.RegisterButton)
-        btnMoveActivity.setOnClickListener(this)
+        val view_pager : ViewPager = findViewById(R.id.view_pager)
+        val tabs : TabLayout = findViewById(R.id.tabs)
 
-        loginButton.setOnClickListener {
-            val email = email.text.toString()
-            val intent = Intent(this, MainActivityFragment::class.java)
-            intent.putExtra("email", email)
-            startActivity(intent)
-        }
+        view_pager.adapter = ViewPagerAdapter(this, supportFragmentManager)
+        tabs.setupWithViewPager(view_pager)
     }
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.RegisterButton -> {
-                val moveIntent = Intent(this@MainActivityFragment, MainActivityRegister::class.java)
-                startActivity(moveIntent)
-            }
-        }
+
+        private fun gantiFragment(fragmentManager: FragmentManager, fragment: Fragment,
+                              frameId: Int) {
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(frameId,fragment)
+        transaction.commit()
     }
+            fun tampilMyFriendsFragment() {
+        gantiFragment(supportFragmentManager,FragmentFirst.newInstance(),R.id.tabs)
+    }
+
+            fun tampilMyFriendsAddFragment() {
+        gantiFragment(supportFragmentManager,FragmentSecond.newInstance(),R.id.view_pager)
+  }
 }
